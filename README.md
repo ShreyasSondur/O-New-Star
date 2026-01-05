@@ -22,7 +22,7 @@ The project uses the Next.js "Next.js" runtime, so dependencies are automaticall
 
 Create a `.env.local` file in the root directory:
 
-```bash
+\`\`\`bash
 # Database (Already provided)
 DATABASE_URL="postgres://postgres.vltnjsshwcsaltkpjmve:JR0IRZr3bnvwgTbQ@aws-1-us-east-1.pooler.supabase.com:5432/postgres?sslmode=require"
 
@@ -36,7 +36,7 @@ RAZORPAY_WEBHOOK_SECRET="your_webhook_secret"
 
 # App URL
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
-```
+\`\`\`
 
 ### 3. Database Setup
 
@@ -60,9 +60,9 @@ Run the SQL scripts in order to set up your database:
 
 ### 5. Run the Application
 
-```bash
+\`\`\`bash
 npm run dev
-```
+\`\`\`
 
 Visit:
 - Guest Booking: `http://localhost:3000`
@@ -112,9 +112,9 @@ Visit:
 ### Double Booking Prevention
 
 The `booking_dates` table has a unique constraint:
-```sql
+\`\`\`sql
 UNIQUE(room_id, date)
-```
+\`\`\`
 
 This guarantees that no two bookings can lock the same room on the same date. If two users try to book simultaneously, one will succeed and the other will fail with a clear error message.
 
