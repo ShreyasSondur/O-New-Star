@@ -33,7 +33,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         room_number,
         price_per_night,
         max_guests,
-        is_active,
+        is_active === undefined ? true : is_active,
         image_url || null,
         has_wifi,
         has_tv,
@@ -53,7 +53,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     if (error.code === "23505") {
       return NextResponse.json({ error: "Room number already exists" }, { status: 409 })
     }
-    return NextResponse.json({ error: "Failed to update room" }, { status: 500 })
+    return NextResponse.json({ error: "Failed to update room: " + (error.message || String(error)) }, { status: 500 })
   }
 }
 

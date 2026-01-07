@@ -5,17 +5,24 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Calendar, Users, Search } from "lucide-react"
+import { CalendarIcon, Users, Search } from "lucide-react"
 import { toast } from "sonner"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Calendar } from "@/components/ui/calendar"
+import { format } from "date-fns"
+import { cn } from "@/lib/utils"
 
 interface SearchFormProps {
   onSearch: (data: { checkIn: string; checkOut: string; adults: number; children: number }) => void
 }
 
 export function SearchForm({ onSearch }: SearchFormProps) {
+  const [date, setDate] = useState<{ from: Date | undefined; to: Date | undefined }>({
+    from: undefined,
+    to: undefined,
+  })
+
   const [formData, setFormData] = useState({
-    checkIn: "",
-    checkOut: "",
     adults: "2",
     children: "0",
   })
@@ -23,7 +30,7 @@ export function SearchForm({ onSearch }: SearchFormProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!formData.checkIn || !formData.checkOut) {
+    if (!date.from || !date.to) {
       toast.error("Please select check-in and check-out dates")
       return
     }
@@ -33,69 +40,90 @@ export function SearchForm({ onSearch }: SearchFormProps) {
       return
     }
 
-    const checkInDate = new Date(formData.checkIn)
-    const checkOutDate = new Date(formData.checkOut)
-
-    if (checkOutDate <= checkInDate) {
-      toast.error("Check-out date must be after check-in date")
-      return
-    }
-
     onSearch({
-      checkIn: formData.checkIn,
-      checkOut: formData.checkOut,
+      checkIn: format(date.from, "yyyy-MM-dd"),
+      checkOut: format(date.to, "yyyy-MM-dd"),
       adults: Number.parseInt(formData.adults),
       children: Number.parseInt(formData.children) || 0,
     })
   }
-
-  const today = new Date().toISOString().split("T")[0]
 
   return (
     <form onSubmit={handleSubmit}>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         {/* Check In */}
         <div className="space-y-2">
-          <Label htmlFor="checkIn" className="text-sm font-medium text-gray-700">
-            Check In
-          </Label>
+          <Label className="text-sm font-medium text-gray-700">Check In</Label>
           <div className="relative">
-            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-[#2671D9]" />
-            <Input
-              id="checkIn"
-              type="date"
-              min={today}
-              value={formData.checkIn}
-              onChange={(e) => setFormData({ ...formData, checkIn: e.target.value })}
-              className="pl-10 bg-white border-gray-300 h-10"
-              placeholder="Select date"
-            />
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className={cn(
+                    "w-full justify-start text-left font-normal h-10 border-gray-300",
+                    !date.from && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4 text-[#2671D9]" />
+                  {date.from ? format(date.from, "PPP") : <span>Pick a date</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={date.from}
+                  onSelect={(newDate: Date | undefined) => {
+                    setDate(prev => ({ ...prev, from: newDate }))
+                    // If check-out is before new check-in, reset check-out
+                    if (date.to && newDate && date.to < newDate) {
+                      setDate(prev => ({ from: newDate, to: undefined }))
+                    }
+                  }}
+                  disabled={(date: Date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
 
         {/* Check Out */}
         <div className="space-y-2">
-          <Label htmlFor="checkOut" className="text-sm font-medium text-gray-700">
-            Check Out
-          </Label>
+          <Label className="text-sm font-medium text-gray-700">Check Out</Label>
           <div className="relative">
-            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-[#2671D9]" />
-            <Input
-              id="checkOut"
-              type="date"
-              min={formData.checkIn || today}
-              value={formData.checkOut}
-              onChange={(e) => setFormData({ ...formData, checkOut: e.target.value })}
-              className="pl-10 bg-white border-gray-300 h-10"
-              placeholder="Select date"
-            />
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className={cn(
+                    "w-full justify-start text-left font-normal h-10 border-gray-300",
+                    !date.to && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4 text-[#2671D9]" />
+                  {date.to ? format(date.to, "PPP") : <span>Pick a date</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={date.to}
+                  onSelect={(newDate: Date | undefined) => setDate(prev => ({ ...prev, to: newDate }))}
+                  disabled={(d: Date) =>
+                    d < new Date(new Date().setHours(0, 0, 0, 0)) ||
+                    (date.from ? d <= date.from : false)
+                  }
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
 
         {/* Guests (Adults) */}
         <div className="space-y-2">
           <Label htmlFor="adults" className="text-sm font-medium text-gray-700">
-            Guests
+            Adults
           </Label>
           <div className="relative">
             <Users className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-[#2671D9]" />
@@ -115,7 +143,7 @@ export function SearchForm({ onSearch }: SearchFormProps) {
         {/* Guest 2A (Children) */}
         <div className="space-y-2">
           <Label htmlFor="children" className="text-sm font-medium text-gray-700">
-            Guest 2A
+            Children
           </Label>
           <div className="relative">
             <Users className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-[#2671D9]" />

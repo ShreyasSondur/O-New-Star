@@ -20,9 +20,10 @@ interface BookingFormProps {
   searchParams: { checkIn: string; checkOut: string; adults: number; children: number }
   onComplete: () => void
   onCancel: () => void
+  onBookingSuccess?: () => void
 }
 
-export function BookingForm({ room, searchParams, onComplete, onCancel }: BookingFormProps) {
+export function BookingForm({ room, searchParams, onComplete, onCancel, onBookingSuccess }: BookingFormProps) {
   const [formData, setFormData] = useState({
     guestName: "",
     guestEmail: "",
@@ -83,6 +84,10 @@ export function BookingForm({ room, searchParams, onComplete, onCancel }: Bookin
   const handlePaymentSuccess = () => {
     setShowPayment(false)
     setBookingConfirmed(true)
+    // Notify parent immediately so it can refresh the room list in the background
+    if (onBookingSuccess) {
+      onBookingSuccess()
+    }
   }
 
   if (bookingConfirmed) {

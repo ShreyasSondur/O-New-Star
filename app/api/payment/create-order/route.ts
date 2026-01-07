@@ -27,6 +27,23 @@ export async function POST(request: Request) {
     // Backend determines the amount (never trust client)
     const amount = Number.parseFloat(booking.total_amount)
 
+    // Check if Razorpay is configured
+    const razorpayKeyId = process.env.RAZORPAY_KEY_ID
+    const razorpayKeySecret = process.env.RAZORPAY_KEY_SECRET
+
+    if (!razorpayKeyId || !razorpayKeySecret) {
+      // Razorpay not configured - allow booking without payment for now
+      // In production, you might want to require payment
+      return NextResponse.json({
+        orderId: null,
+        amount: amount,
+        currency: "INR",
+        keyId: null,
+        paymentRequired: false,
+        message: "Payment gateway not configured. Booking will be created without payment.",
+      })
+    }
+
     // Create Razorpay order
     const order = await createRazorpayOrder(amount, `booking_${bookingId}`)
 
@@ -43,7 +60,8 @@ export async function POST(request: Request) {
       amount: order.amount,
       currency: order.currency,
       // Razorpay public key ID is safe to expose - it's designed to be public
-      keyId: process.env.RAZORPAY_KEY_ID,
+      keyId: razorpayKeyId,
+      paymentRequired: true,
     })
   } catch (error: any) {
     console.error("[v0] Error creating payment order:", error)

@@ -72,6 +72,32 @@ export function PaymentModal({
 
       const orderData = await orderRes.json()
 
+      // If Razorpay is not configured, confirm booking directly
+      if (!orderData.paymentRequired || !orderData.keyId) {
+        toast.info("Payment gateway not configured. Confirming booking without payment...")
+        
+        // Confirm booking directly without payment
+        const confirmRes = await fetch("/api/bookings/confirm", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            bookingId,
+            razorpayOrderId: null,
+            razorpayPaymentId: null,
+          }),
+        })
+
+        if (!confirmRes.ok) {
+          const error = await confirmRes.json()
+          throw new Error(error.error || "Failed to confirm booking")
+        }
+
+        toast.success("Booking confirmed successfully!")
+        onSuccess()
+        setLoading(false)
+        return
+      }
+
       // Razorpay options
       const options = {
         key: orderData.keyId,

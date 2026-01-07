@@ -9,26 +9,13 @@ const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Ō New Star Hotel - Comfortable Stay. Affordable Rates.",
+  title: "NEW STAR LODGE",
   description:
-    "Book your perfect room at Ō New Star Hotel in Balurgaon. Modern amenities, exceptional service, and prime location near Chilka Railway Station.",
+    "Book your perfect room at NEW STAR LODGE in Balurgaon. Modern amenities, exceptional service, and prime location near Chilka Railway Station.",
   generator: "v0.app",
   icons: {
-    icon: [
-      {
-        url: "/icon-light-32x32.png",
-        media: "(prefers-color-scheme: light)",
-      },
-      {
-        url: "/icon-dark-32x32.png",
-        media: "(prefers-color-scheme: dark)",
-      },
-      {
-        url: "/icon.svg",
-        type: "image/svg+xml",
-      },
-    ],
-    apple: "/apple-icon.png",
+    icon: "/logo.png",
+    apple: "/logo.png",
   },
 }
 
@@ -39,7 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`font-sans antialiased`}>
+      <body className={`font-sans antialiased`} suppressHydrationWarning>
         {children}
         <Toaster position="top-center" richColors />
         <Analytics />

@@ -20,11 +20,25 @@ export default function AdminLoginPage() {
     e.preventDefault()
     setIsLoading(true)
 
-    // Simple demo login - in production, authenticate with backend
-    if (email && password) {
-      setTimeout(() => {
+    try {
+      const res = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: email, password }),
+      })
+
+      if (res.ok) {
         router.push("/admin")
-      }, 500)
+        router.refresh() // Ensure middleware catches the new cookie
+      } else {
+        const data = await res.json()
+        alert(data.error || "Login failed")
+      }
+    } catch (error) {
+      console.error("Login failed", error)
+      alert("An error occurred during login")
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -40,7 +54,7 @@ export default function AdminLoginPage() {
             <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4">
               <Hotel className="h-8 w-8 text-blue-500" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900">Ō New Star Hotel</h1>
+            <h1 className="text-2xl font-bold text-gray-900">O New Star Hotel</h1>
             <p className="text-sm text-gray-500 uppercase tracking-wide mt-1">Admin Portal</p>
           </div>
 
@@ -53,7 +67,7 @@ export default function AdminLoginPage() {
 
             <div>
               <Label htmlFor="email" className="text-sm font-medium text-gray-700 mb-2 block">
-                Username / Email
+                Username
               </Label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -105,7 +119,7 @@ export default function AdminLoginPage() {
           </form>
 
           {/* Footer */}
-          <p className="text-center text-xs text-gray-500 mt-8">© 2025 Ō New Star Hotel. All rights reserved.</p>
+          <p className="text-center text-xs text-gray-500 mt-8">© 2025 O New Star Hotel. All rights reserved.</p>
         </div>
       </div>
     </div>

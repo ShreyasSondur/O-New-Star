@@ -1,38 +1,32 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useSearchParams } from "next/navigation"
+import { useSearchParams, useRouter } from "next/navigation"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Wifi, Tv, Wind, Wine, Users, ArrowLeft } from "lucide-react"
+import { RoomCard } from "@/components/room-card"
+import { SearchForm } from "@/components/search-form"
+import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { toast } from "sonner"
-
-interface Room {
-  id: number
-  room_name: string
-  room_number: string
-  price_per_night: number
-  max_guests: number
-  image_url: string | null
-  has_wifi: boolean
-  has_tv: boolean
-  has_ac: boolean
-  has_bar: boolean
-  total_price: number
-}
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
+import { BookingForm } from "@/components/booking-form"
+import type { AvailableRoom } from "@/lib/types"
 
 export default function RoomsPage() {
+  const router = useRouter()
   const searchParams = useSearchParams()
-  const [rooms, setRooms] = useState<Room[]>([])
+  const [rooms, setRooms] = useState<AvailableRoom[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [searchData, setSearchData] = useState({
+  const [selectedRoom, setSelectedRoom] = useState<AvailableRoom | null>(null)
+
+  const searchData = {
     checkIn: searchParams.get("checkIn") || "",
     checkOut: searchParams.get("checkOut") || "",
-    adults: searchParams.get("adults") || "2",
-    children: searchParams.get("children") || "0",
-  })
+    adults: Number(searchParams.get("adults") || "2"),
+    children: Number(searchParams.get("children") || "0"),
+  }
 
   useEffect(() => {
     if (searchData.checkIn && searchData.checkOut) {
@@ -51,8 +45,8 @@ export default function RoomsPage() {
         body: JSON.stringify({
           checkIn: searchData.checkIn,
           checkOut: searchData.checkOut,
-          adults: Number.parseInt(searchData.adults),
-          children: Number.parseInt(searchData.children) || 0,
+          adults: searchData.adults,
+          children: searchData.children,
         }),
       })
 
@@ -107,70 +101,66 @@ export default function RoomsPage() {
       </header>
 
       {/* Results Section */}
-      <div className="container mx-auto px-6 py-12">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Available Rooms</h1>
-          <p className="text-gray-600">
-            {searchData.checkIn && searchData.checkOut
-              ? `${new Date(searchData.checkIn).toLocaleDateString()} - ${new Date(searchData.checkOut).toLocaleDateString()} • ${nights} night${nights > 1 ? "s" : ""} • ${searchData.adults} adult${Number.parseInt(searchData.adults) > 1 ? "s" : ""}${Number.parseInt(searchData.children) > 0 ? ` • ${searchData.children} child${Number.parseInt(searchData.children) > 1 ? "ren" : ""}` : ""}`
-              : "Please select your dates to see available rooms"}
-          </p>
+      <div className="container mx-auto px-6 py-8">
+
+        {/* Search Bar Section */}
+        <div className="mb-8 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+          <SearchForm onSearch={(data) => {
+            const params = new URLSearchParams()
+            params.set("checkIn", data.checkIn)
+            params.set("checkOut", data.checkOut)
+            params.set("adults", data.adults.toString())
+            params.set("children", data.children.toString())
+            router.push(`/rooms?${params.toString()}`)
+          }} />
+        </div>
+
+        <div className="mb-6 flex justify-between items-end">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Available Rooms</h1>
+            <p className="text-sm text-gray-500 mt-1">
+              {searchData.checkIn && searchData.checkOut
+                ? `${new Date(searchData.checkIn).toLocaleDateString()} - ${new Date(searchData.checkOut).toLocaleDateString()} • ${nights} night${nights > 1 ? "s" : ""} • ${searchData.adults} Guest${searchData.adults > 1 ? "s" : ""}`
+                : "Select dates to view availability"}
+            </p>
+          </div>
         </div>
 
         {rooms.length === 0 ? (
-          <Card className="p-12 text-center">
-            <p className="text-gray-600 text-lg">No rooms available for the selected dates.</p>
-            <p className="text-gray-500 mt-2">Please try different dates or contact us directly.</p>
-            <Link href="/">
-              <Button className="mt-6 bg-[#2671D9] hover:bg-[#1f5fc0]">Search Again</Button>
-            </Link>
+          <Card className="p-12 text-center bg-gray-50/50 border-dashed">
+            <p className="text-gray-600 text-lg font-medium">No rooms found.</p>
+            <p className="text-gray-500 mt-2 text-sm">Try adjusting your dates or guest count.</p>
           </Card>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {rooms.map((room) => (
-              <Card key={room.id} className="overflow-hidden hover:shadow-xl transition-shadow">
-                <div className="relative h-48">
-                  <img
-                    src={room.image_url || "/placeholder.svg?height=192&width=384"}
-                    alt={room.room_name}
-                    className="w-full h-full object-cover"
-                  />
-                  <Badge className="absolute top-3 left-3 bg-white text-gray-900">Room {room.room_number}</Badge>
-                </div>
-
-                <div className="p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">{room.room_name}</h3>
-
-                  <div className="flex items-center gap-4 mb-4 text-gray-600">
-                    <div className="flex items-center gap-1">
-                      <Users className="h-4 w-4" />
-                      <span className="text-sm">{room.max_guests} Guests</span>
-                    </div>
-                    {room.has_wifi && <Wifi className="h-4 w-4" title="WiFi" />}
-                    {room.has_tv && <Tv className="h-4 w-4" title="TV" />}
-                    {room.has_ac && <Wind className="h-4 w-4" title="AC" />}
-                    {room.has_bar && <Wine className="h-4 w-4" title="Mini Bar" />}
-                  </div>
-
-                  <div className="border-t pt-4">
-                    <div className="flex items-baseline justify-between mb-4">
-                      <div>
-                        <p className="text-sm text-gray-600">₹{room.price_per_night.toLocaleString()} / night</p>
-                        <p className="text-2xl font-bold text-gray-900">₹{room.total_price.toLocaleString()}</p>
-                        <p className="text-xs text-gray-500">
-                          Total for {nights} night{nights > 1 ? "s" : ""}
-                        </p>
-                      </div>
-                    </div>
-
-                    <Button className="w-full bg-[#2671D9] hover:bg-[#1f5fc0]">Book Now</Button>
-                  </div>
-                </div>
-              </Card>
+              <RoomCard
+                key={room.id}
+                room={room}
+                nights={nights}
+                onBook={setSelectedRoom}
+              />
             ))}
           </div>
         )}
       </div>
+
+      <Dialog open={!!selectedRoom} onOpenChange={(open) => !open && setSelectedRoom(null)}>
+        <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
+          {selectedRoom && (
+            <BookingForm
+              room={selectedRoom}
+              searchParams={searchData}
+              onComplete={() => {
+                setSelectedRoom(null)
+                searchRooms()
+              }}
+              onCancel={() => setSelectedRoom(null)}
+              onBookingSuccess={() => searchRooms()}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

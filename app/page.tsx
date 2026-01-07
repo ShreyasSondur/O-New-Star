@@ -5,6 +5,8 @@ import { SearchForm } from "@/components/search-form"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { MapPin, Phone, Mail, Wifi, Car, Coffee, Wind, Tv, MapPinned } from "lucide-react"
+import { SiteHeader } from "@/components/site-header"
+import { SiteFooter } from "@/components/site-footer"
 
 export default function HomePage() {
   const [searchData, setSearchData] = useState<any>(null)
@@ -24,62 +26,33 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200">
-        <div className="container mx-auto px-6">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center">
-                <span className="text-white font-bold text-xl">Ō</span>
-              </div>
-            </div>
-
-            {/* Navigation */}
-            <nav className="hidden md:flex items-center gap-8">
-              <Link href="/" className="text-gray-900 hover:text-[#2671D9] transition-colors font-medium">
-                Home
-              </Link>
-              <Link href="#rooms" className="text-gray-600 hover:text-[#2671D9] transition-colors">
-                Rooms
-              </Link>
-              <Link href="#amenities" className="text-gray-600 hover:text-[#2671D9] transition-colors">
-                Amenities
-              </Link>
-              <Link href="#location" className="text-gray-600 hover:text-[#2671D9] transition-colors">
-                Location
-              </Link>
-              <Link href="#contact" className="text-gray-600 hover:text-[#2671D9] transition-colors">
-                Contact
-              </Link>
-            </nav>
-
-            {/* Book Now Button */}
-            <Button className="bg-[#2671D9] hover:bg-[#1e5bbf] text-white px-6">Book Now</Button>
-          </div>
-        </div>
-      </header>
+      <SiteHeader />
 
       {/* Hero Section */}
-      <section className="relative h-[650px] flex items-center justify-center mt-16">
+      <section className="relative h-[800px] flex items-center justify-center pt-20">
         {/* Background Image */}
         <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat fixed-background"
           style={{ backgroundImage: "url(/images/hero-bg.jpg)" }}
         />
 
-        {/* Dark Overlay */}
-        <div className="absolute inset-0 bg-black/40" />
+        {/* Dark Overlay with Advanced Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-black/80" />
 
         {/* Content */}
-        <div className="relative z-10 w-full max-w-[1200px] mx-auto px-4">
+        <div className="relative z-10 w-full max-w-[1200px] mx-auto px-4 flex flex-col items-center">
           {/* Heading */}
-          <div className="text-center mb-8">
-            <h1 className="text-white text-5xl md:text-6xl font-bold mb-3">Ō New Star Hotel</h1>
-            <p className="text-white/90 text-lg">Comfortable Stay. Affordable Rates.</p>
+          <div className="text-center mb-12 space-y-6 animate-in fade-in slide-in-from-bottom-10 duration-1000">
+            <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#2671D9] to-[#0F4C81]">
+              O New Star Hotel
+            </span>
+            <p className="text-white/90 text-xl md:text-3xl font-light tracking-wide drop-shadow-lg max-w-2xl mx-auto">
+              Your Sanctuary of Comfort in the Heart of the City.
+            </p>
           </div>
 
           {/* Search Form Container */}
-          <div className="bg-white rounded-xl shadow-2xl p-6 max-w-[900px] mx-auto">
+          <div className="w-full max-w-[1000px] bg-white rounded-2xl shadow-2xl p-8 animate-in fade-in slide-in-from-bottom-16 duration-1000 delay-300 transform hover:scale-[1.01] transition-transform">
             <SearchForm onSearch={handleSearch} />
           </div>
         </div>
@@ -132,16 +105,16 @@ export default function HomePage() {
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-3">About Us</h2>
-            <p className="text-gray-600">Discover the story behind Ō New Star Hotel</p>
+            <p className="text-gray-600">Discover the story behind O New Star Hotel</p>
           </div>
 
           <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
             {/* Images */}
             <div className="relative">
               <div className="grid grid-cols-2 gap-4">
-                <img src="/images/room-1.jpg" alt="Hotel Room" className="w-full h-[300px] object-cover rounded-lg" />
+                <img src="/images/about-1.png" alt="Hotel Room" className="w-full h-[300px] object-cover rounded-lg" />
                 <img
-                  src="/images/room-2.jpg"
+                  src="/images/about-2.png"
                   alt="Hotel Room"
                   className="w-full h-[300px] object-cover rounded-lg mt-8"
                 />
@@ -152,7 +125,7 @@ export default function HomePage() {
             <div>
               <h3 className="text-3xl font-bold text-gray-900 mb-6">Comfort Meets Affordability</h3>
               <p className="text-gray-600 mb-8 leading-relaxed">
-                Welcome to Ō New Star Hotel, where we are dedicated to providing exceptional hospitality and creating
+                Welcome to O New Star Hotel, where we are dedicated to providing exceptional hospitality and creating
                 memorable experiences for our guests. Since our establishment, we have been committed to offering the
                 perfect blend of comfort, convenience, and value.
               </p>
@@ -345,76 +318,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer id="contact" className="bg-gray-900 text-white py-16">
-        <div className="container mx-auto px-6">
-          <div className="grid md:grid-cols-3 gap-12 max-w-6xl mx-auto">
-            {/* O New Star */}
-            <div>
-              <h3 className="text-xl font-bold mb-4">O New Star</h3>
-              <p className="text-gray-400 text-sm leading-relaxed">
-                Comfortable and affordable accommodation for travelers.
-              </p>
-            </div>
-
-            {/* Quick Links */}
-            <div>
-              <h3 className="text-xl font-bold mb-4">Quick Links</h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link href="#rooms" className="text-gray-400 hover:text-white transition-colors text-sm">
-                    Rooms
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#amenities" className="text-gray-400 hover:text-white transition-colors text-sm">
-                    Amenities
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#location" className="text-gray-400 hover:text-white transition-colors text-sm">
-                    Location
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#contact" className="text-gray-400 hover:text-white transition-colors text-sm">
-                    Contact
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            {/* Contact Us */}
-            <div>
-              <h3 className="text-xl font-bold mb-4">Contact Us</h3>
-              <ul className="space-y-3">
-                <li className="flex gap-2 text-gray-400 text-sm">
-                  <MapPin className="w-5 h-5 flex-shrink-0 text-[#2671D9]" />
-                  <span>
-                    Plot No-68/1858, City - Balurgaon, Near Chilka Railway Station, Dist - Khordha, Balurgaon, Balugaon
-                  </span>
-                </li>
-                <li className="flex gap-2 text-gray-400 text-sm">
-                  <Phone className="w-5 h-5 flex-shrink-0 text-[#2671D9]" />
-                  <span>
-                    +91-6370949XXX
-                    <br />
-                    +91-9583125XXX
-                  </span>
-                </li>
-                <li className="flex gap-2 text-gray-400 text-sm">
-                  <Mail className="w-5 h-5 flex-shrink-0 text-[#2671D9]" />
-                  <span>info@onewstar.com</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="border-t border-gray-800 mt-12 pt-8 text-center">
-            <p className="text-gray-400 text-sm">© 2026 O New Star Hotel. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   )
 }

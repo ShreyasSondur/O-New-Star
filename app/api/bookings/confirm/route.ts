@@ -34,35 +34,21 @@ export async function POST(request: Request) {
         throw new Error("Booking was cancelled")
       }
 
-      // Generate all dates that need to be locked
-      const dates = generateDateRange(booking.check_in_date, booking.check_out_date)
-
-      // Try to insert booking dates (this will fail if dates are already taken)
-      for (const date of dates) {
-        try {
-          await client.query(
-            `INSERT INTO booking_dates (booking_id, room_id, date)
-             VALUES ($1, $2, $3)`,
-            [bookingId, booking.room_id, date],
-          )
-        } catch (error: any) {
-          // Unique constraint violation = double booking attempt
-          if (error.code === "23505") {
-            throw new Error("Room is no longer available for selected dates")
-          }
-          throw error
-        }
-      }
+      // Dates are already reserved during booking creation (PENDING state)
+      // So we just confirm the status here.
 
       // Update booking status
+      // If payment IDs are provided, mark as SUCCESS, otherwise mark as PENDING (for manual confirmation)
+      const paymentStatus = razorpayOrderId && razorpayPaymentId ? 'SUCCESS' : 'PENDING'
+
       await client.query(
         `UPDATE bookings
          SET status = 'CONFIRMED',
-             payment_status = 'SUCCESS',
-             razorpay_order_id = $1,
-             razorpay_payment_id = $2
-         WHERE id = $3`,
-        [razorpayOrderId || null, razorpayPaymentId || null, bookingId],
+             payment_status = $1,
+             razorpay_order_id = $2,
+             razorpay_payment_id = $3
+         WHERE id = $4`,
+        [paymentStatus, razorpayOrderId || null, razorpayPaymentId || null, bookingId],
       )
 
       return booking

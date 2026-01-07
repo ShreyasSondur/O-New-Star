@@ -36,7 +36,7 @@ export async function POST(request: Request) {
       searchParams: { checkIn, checkOut, adults, children: children || 0 },
     })
   } catch (error) {
-    console.error("[v0] Error searching rooms:", error)
+    console.error("Error searching rooms:", error)
     return NextResponse.json({ error: "Failed to search rooms" }, { status: 500 })
   }
 }
