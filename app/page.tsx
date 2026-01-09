@@ -43,7 +43,7 @@ export default function HomePage() {
         <div className="relative z-10 w-full max-w-[1200px] mx-auto px-4 flex flex-col items-center">
           {/* Heading */}
           <div className="text-center mb-12 space-y-6 animate-in fade-in slide-in-from-bottom-10 duration-1000">
-            <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#2671D9] to-[#0F4C81]">
+            <span className="text-xl font-bold bg-clip-text text-transparent text-white mt-2">
               O New Star Hotel
             </span>
             <p className="text-white/90 text-xl md:text-3xl font-light tracking-wide drop-shadow-lg max-w-2xl mx-auto">
@@ -54,48 +54,6 @@ export default function HomePage() {
           {/* Search Form Container */}
           <div className="w-full max-w-[1000px] bg-white rounded-2xl shadow-2xl p-8 animate-in fade-in slide-in-from-bottom-16 duration-1000 delay-300 transform hover:scale-[1.01] transition-transform">
             <SearchForm onSearch={handleSearch} />
-          </div>
-        </div>
-      </section>
-
-      {/* Our Hotel Section */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-6">
-          <h2 className="text-4xl font-bold text-center text-gray-900 mb-12">Our Hotel</h2>
-
-          <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {/* Lobby */}
-            <div className="relative h-[280px] rounded-xl overflow-hidden group cursor-pointer">
-              <img
-                src="/images/lobby.jpg"
-                alt="Lobby"
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-              <h3 className="absolute bottom-6 left-6 text-white text-2xl font-semibold">Lobby</h3>
-            </div>
-
-            {/* Common Area */}
-            <div className="relative h-[280px] rounded-xl overflow-hidden group cursor-pointer">
-              <img
-                src="/images/common-area.jpg"
-                alt="Common Area"
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-              <h3 className="absolute bottom-6 left-6 text-white text-2xl font-semibold">Common Area</h3>
-            </div>
-
-            {/* Restaurant */}
-            <div className="relative h-[280px] rounded-xl overflow-hidden group cursor-pointer">
-              <img
-                src="/images/restaurant.jpg"
-                alt="Restaurant"
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-              <h3 className="absolute bottom-6 left-6 text-white text-2xl font-semibold">Restaurant</h3>
-            </div>
           </div>
         </div>
       </section>
@@ -112,9 +70,9 @@ export default function HomePage() {
             {/* Images */}
             <div className="relative">
               <div className="grid grid-cols-2 gap-4">
-                <img src="/images/about-1.png" alt="Hotel Room" className="w-full h-[300px] object-cover rounded-lg" />
+                <img src="/images/about-2.png" alt="Hotel Room" className="w-full h-[300px] object-cover rounded-lg" />
                 <img
-                  src="/images/about-2.png"
+                  src="/images/about-1.png"
                   alt="Hotel Room"
                   className="w-full h-[300px] object-cover rounded-lg mt-8"
                 />
