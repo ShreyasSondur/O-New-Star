@@ -43,8 +43,23 @@ export default function HomePage() {
         <div className="relative z-10 w-full max-w-[1200px] mx-auto px-4 flex flex-col items-center">
           {/* Heading */}
           <div className="text-center mb-12 space-y-6 animate-in fade-in slide-in-from-bottom-10 duration-1000">
-            <span className="text-xl font-bold bg-clip-text text-transparent text-white mt-2">
+            <span className="text-xl font-bold bg-clip-text text-transparent text-white mt-2 flex items-center justify-center gap-2">
               O New Star Hotel
+              <span className="bg-blue-600/20 text-blue-400 text-xs px-2 py-0.5 rounded-full border border-blue-500/50 flex items-center gap-1 backdrop-blur-sm">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="w-3 h-3"
+                  aria-hidden="true"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M8.603 3.799A4.49 4.49 0 0112 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 013.498 1.307 4.491 4.491 0 011.307 3.497A4.49 4.49 0 0121.75 12a4.49 4.49 0 01-1.549 3.397 4.491 4.491 0 01-1.307 3.498 4.491 4.491 0 01-3.497 1.307A4.49 4.49 0 0112 21.75a4.49 4.49 0 01-3.397-1.549 4.49 4.49 0 01-3.498-1.306 4.491 4.491 0 01-1.307-3.498A4.49 4.49 0 012.25 12c0-1.357.6-2.573 1.549-3.397a4.49 4.49 0 011.307-3.497 4.491 4.491 0 013.497-1.307zm7.007 6.387a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                Verified Lodge
+              </span>
             </span>
             <p className="text-white/90 text-xl md:text-3xl font-light tracking-wide drop-shadow-lg max-w-2xl mx-auto">
               Your Sanctuary of Comfort in the Heart of the City.
@@ -210,7 +225,7 @@ export default function HomePage() {
             {/* Location Info */}
             <div>
               <p className="text-gray-600 mb-8 leading-relaxed">
-                Conveniently located near Chilka Railway Station in Balurgaon, with easy access to public transport and
+                Conveniently located near Chilka Railway Station in Balugaon, with easy access to public transport and
                 local attractions.
               </p>
 
@@ -223,11 +238,11 @@ export default function HomePage() {
                   <div>
                     <h4 className="font-semibold text-gray-900 mb-1">Address</h4>
                     <p className="text-gray-600 text-sm">
-                      Plot No-68/1858, City - Balurgaon,
+                      Plot No-68/1858, City - Balugaon,
                       <br />
                       Near Chilka Railway Station,
                       <br />
-                      Dist - Khordha, Balurgaon, Balugaon
+                      Dist - Khordha, Balugaon
                     </p>
                   </div>
                 </div>

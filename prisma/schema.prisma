@@ -1,0 +1,182 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          UserRole  @default(USER)
+  accounts      Account[]
+  
+  isTwoFactorEnabled Boolean @default(false)
+  twoFactorConfirmation TwoFactorConfirmation?
+  
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @default(now()) @updatedAt
+  
+  @@map("users")
+}
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String? @db.Text
+  access_token       String? @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String? @db.Text
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model VerificationToken {
+  id      String   @id @default(cuid())
+  email   String
+  token   String   @unique
+  expires DateTime
+
+  @@unique([email, token])
+  @@map("verification_tokens")
+}
+
+model TwoFactorToken {
+  id      String   @id @default(cuid())
+  email   String
+  token   String   @unique
+  expires DateTime
+
+  @@unique([email, token])
+  @@map("two_factor_tokens")
+}
+
+model TwoFactorConfirmation {
+  id     String @id @default(cuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId])
+  @@map("two_factor_confirmations")
+}
+
+// --- Existing Tables Mapping ---
+
+model Floor {
+  id          Int      @id @default(autoincrement())
+  name        String
+  floor_number Int     @unique
+  created_at  DateTime @default(now())
+  updated_at  DateTime @default(now()) @updatedAt
+  rooms       Room[]
+
+  @@map("floors")
+}
+
+model Room {
+  id             Int       @id @default(autoincrement())
+  floor_id       Int?
+  room_name      String
+  room_number    String    @unique
+  price_per_night Decimal  @db.Decimal(10, 2)
+  max_guests     Int
+  is_active      Boolean   @default(true)
+  image_url      String?
+  
+  has_wifi       Boolean   @default(false)
+  has_tv         Boolean   @default(false)
+  has_ac         Boolean   @default(false)
+  has_bar        Boolean   @default(false)
+  
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @default(now()) @updatedAt
+  
+  floor          Floor?    @relation(fields: [floor_id], references: [id], onDelete: Cascade)
+  bookings       Booking[]
+  bookingDates   BookingDate[]
+  adminBlocks    AdminBlock[]
+
+  @@map("rooms")
+}
+
+model Booking {
+  id                  Int       @id @default(autoincrement())
+  room_id             Int?
+  
+  guest_name          String
+  guest_email         String
+  guest_phone         String
+  guest_address       String?
+  
+  check_in_date       DateTime  @db.Date
+  check_out_date      DateTime  @db.Date
+  num_adults          Int
+  num_children        Int       @default(0)
+  total_amount        Decimal   @db.Decimal(10, 2)
+  
+  status              String    @default("PENDING") // PENDING, CONFIRMED, CANCELLED
+  
+  is_admin_booking    Boolean   @default(false)
+  blocks_availability Boolean   @default(true)
+  
+  razorpay_order_id   String?
+  razorpay_payment_id String?
+  payment_status      String    @default("PENDING")
+  
+  admin_notes         String?
+  
+  created_at          DateTime  @default(now())
+  updated_at          DateTime  @default(now()) @updatedAt
+  
+  room                Room?     @relation(fields: [room_id], references: [id], onDelete: Cascade)
+  bookingDates        BookingDate[]
+
+  @@map("bookings")
+}
+
+model BookingDate {
+  id         Int      @id @default(autoincrement())
+  booking_id Int?
+  room_id    Int
+  date       DateTime @db.Date
+  created_at DateTime @default(now())
+  
+  booking    Booking? @relation(fields: [booking_id], references: [id], onDelete: Cascade)
+  room       Room     @relation(fields: [room_id], references: [id], onDelete: Cascade)
+
+  @@unique([room_id, date])
+  @@map("booking_dates")
+}
+
+model AdminBlock {
+  id           Int      @id @default(autoincrement())
+  room_id      Int
+  blocked_date DateTime @db.Date
+  reason       String?
+  created_at   DateTime @default(now())
+  
+  room         Room     @relation(fields: [room_id], references: [id], onDelete: Cascade)
+
+  @@unique([room_id, blocked_date])
+  @@map("admin_blocks")
+}

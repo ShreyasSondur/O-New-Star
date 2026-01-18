@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { UserButton } from "@/components/auth/user-button"
 
 export function SiteHeader() {
     return (
@@ -37,8 +38,15 @@ export function SiteHeader() {
                         </Link>
                     </nav>
 
-                    {/* Book Now Button */}
-                    <Button className="bg-[#2671D9] hover:bg-[#1e5bbf] text-white px-6">Book Now</Button>
+                    {/* Auth & Actions */}
+                    <div className="flex items-center gap-4">
+                        <UserButton />
+                        <Link href="/rooms" passHref>
+                            <Button className="bg-[#2671D9] hover:bg-[#1e5bbf] text-white px-6 font-semibold shadow-sm transition-all hover:shadow-md">
+                                Book Now
+                            </Button>
+                        </Link>
+                    </div>
                 </div>
             </div>
         </header>
