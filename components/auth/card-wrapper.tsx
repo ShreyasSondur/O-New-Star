@@ -7,11 +7,11 @@ import {
     CardHeader
 } from "@/components/ui/card";
 import { Header } from "@/components/auth/header";
-// import { Social } from "@/components/auth/social"; // We'll add Social buttons directly or create component
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { FcGoogle } from "react-icons/fc";
+import { useSearchParams } from "next/navigation";
 
 interface CardWrapperProps {
     children: React.ReactNode;
@@ -28,6 +28,15 @@ export const CardWrapper = ({
     backButtonHref,
     showSocial
 }: CardWrapperProps) => {
+    const searchParams = useSearchParams();
+    const callbackUrl = searchParams.get("callbackUrl");
+
+    const onClick = (provider: "google") => {
+        signIn(provider, {
+            callbackUrl: callbackUrl || "/"
+        });
+    }
+
     return (
         <Card className="w-[400px] shadow-xl border-gray-100">
             <CardHeader>
@@ -51,7 +60,7 @@ export const CardWrapper = ({
                             size="lg"
                             className="w-full flex items-center gap-2"
                             variant="outline"
-                            onClick={() => signIn("google")}
+                            onClick={() => onClick("google")}
                         >
                             <FcGoogle className="h-5 w-5" />
                             <span>Continue with Google</span>
