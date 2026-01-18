@@ -4,9 +4,10 @@ import { useState } from "react"
 import { SearchForm } from "@/components/search-form"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { MapPin, Phone, Mail, Wifi, Car, Coffee, Wind, Tv, MapPinned } from "lucide-react"
+import { MapPin, Phone, Mail, Wifi, Car, Coffee, Wind, Tv, MapPinned, Quote } from "lucide-react"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 
 export default function HomePage() {
   const [searchData, setSearchData] = useState<any>(null)
@@ -216,8 +217,71 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Testimonials Section */}
+      <section id="testimonials" className="py-20 bg-gray-50">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-3">What Our Guests Say</h2>
+            <p className="text-gray-600">Real experiences from happy guests</p>
+          </div>
+
+          <div className="max-w-6xl mx-auto grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {/* Testimonial 1 */}
+            <Card className="group bg-white border-gray-200 shadow-md transition-transform transition-shadow duration-200 hover:-translate-y-0.5 hover:shadow-xl">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-gray-900">
+                  <Quote className="w-5 h-5 text-[#2671D9] transition-colors group-hover:text-[#1f5fb4]" />
+                  Comfortable and Clean Rooms
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 leading-relaxed">
+                  I had a wonderful stay! The room was spotless, the bed was
+                  comfortable, and the staff were very helpful. Great value for money.
+                </p>
+                <p className="mt-4 font-semibold text-gray-900">— Priya S.</p>
+              </CardContent>
+            </Card>
+
+            {/* Testimonial 2 */}
+            <Card className="group bg-white border-gray-200 shadow-md transition-transform transition-shadow duration-200 hover:-translate-y-0.5 hover:shadow-xl">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-gray-900">
+                  <Quote className="w-5 h-5 text-[#2671D9] transition-colors group-hover:text-[#1f5fb4]" />
+                  Perfect Location and Amenities
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 leading-relaxed">
+                  The hotel is in a central location with easy access to transport.
+                  WiFi was fast and the AC kept the room cool throughout.
+                </p>
+                <p className="mt-4 font-semibold text-gray-900">— Arjun K.</p>
+              </CardContent>
+            </Card>
+
+            {/* Testimonial 3 */}
+            <Card className="group bg-white border-gray-200 shadow-md transition-transform transition-shadow duration-200 hover:-translate-y-0.5 hover:shadow-xl">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-gray-900">
+                  <Quote className="w-5 h-5 text-[#2671D9] transition-colors group-hover:text-[#1f5fb4]" />
+                  Friendly Staff and Great Service
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 leading-relaxed">
+                  The team went above and beyond to make our stay pleasant.
+                  Quick check-in and prompt support whenever we needed anything.
+                </p>
+                <p className="mt-4 font-semibold text-gray-900">— Neha R.</p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
       {/* Location Section */}
-      <section id="location" className="py-20 bg-gray-50">
+      <section id="location" className="py-20 bg-white">
         <div className="container mx-auto px-6">
           <h2 className="text-4xl font-bold text-gray-900 mb-12">Location</h2>
 
