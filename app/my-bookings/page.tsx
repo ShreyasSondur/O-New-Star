@@ -1,6 +1,7 @@
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import { db } from "@/lib/prisma"
+import { formatDate } from "@/lib/utils"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Calendar, MapPin, Clock } from "lucide-react"
@@ -89,7 +90,7 @@ export default async function MyBookingsPage() {
                                                 <div className="flex items-center gap-2 text-sm text-gray-600">
                                                     <Calendar className="h-4 w-4 text-blue-500" />
                                                     <span>
-                                                        {new Date(booking.check_in_date).toLocaleDateString()} - {new Date(booking.check_out_date).toLocaleDateString()}
+                                                        {formatDate(booking.check_in_date)} - {formatDate(booking.check_out_date)}
                                                     </span>
                                                 </div>
                                                 <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -105,10 +106,10 @@ export default async function MyBookingsPage() {
 
                                         <div className="mt-6 flex justify-between items-center border-t pt-4">
                                             <div className="text-sm text-gray-500">
-                                                Booked on {new Date(booking.created_at).toLocaleDateString()}
+                                                Booked on {formatDate(booking.created_at)}
                                             </div>
                                             <div className="text-lg font-bold">
-                                                To Pay/Paid: ₹{Number(booking.total_amount).toLocaleString()}
+                                                Paid: ₹{Number(booking.total_amount).toLocaleString()}
                                             </div>
                                         </div>
                                     </div>

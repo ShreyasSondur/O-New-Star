@@ -78,7 +78,7 @@ export function AdminDashboard() {
           <h2 className="text-3xl font-bold">Dashboard</h2>
           <div className="flex items-center gap-2 text-gray-500 mt-1">
             <Calendar className="h-4 w-4" />
-            <p>{new Date().toLocaleDateString("en-US", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+            <p>{new Date().toLocaleDateString("en-IN", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
           </div>
         </div>
         <div className="flex bg-gray-100 p-1 rounded-lg">
@@ -182,7 +182,7 @@ export function AdminDashboard() {
                     <td className="py-4 px-4 text-gray-600 text-sm">
                       <div className="flex items-center gap-2">
                         <Calendar className="h-4 w-4 text-gray-400" />
-                        {guest.date}
+                        {formatDate(guest.date)}
                       </div>
                     </td>
                     <td className="py-4 px-4">
@@ -267,4 +267,15 @@ function GuestDetailsDialog({ guest }: { guest: any }) {
 
 function cn(...classes: (string | boolean | undefined)[]) {
   return classes.filter(Boolean).join(" ")
+}
+
+function formatDate(dateString: string) {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return dateString;
+  return new Intl.DateTimeFormat('en-IN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  }).format(date);
 }

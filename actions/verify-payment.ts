@@ -119,9 +119,9 @@ export async function verifyPayment(params: VerifyPaymentParams) {
                     bookingId: booking.id.toString(),
                     guestName: guestName,
                     roomName: fullBooking.room.room_name,
-                    checkIn: new Date(checkIn).toLocaleDateString(),
-                    checkOut: new Date(checkOut).toLocaleDateString(),
-                    totalAmount: totalAmount,
+                    checkIn: formatDate(checkIn),
+                    checkOut: formatDate(checkOut),
+                    totalAmount: Number(totalAmount),
                     adults: adults,
                     children: children
                 }

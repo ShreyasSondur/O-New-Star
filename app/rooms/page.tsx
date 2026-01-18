@@ -11,6 +11,7 @@ import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { toast } from "sonner"
 import type { AvailableRoom } from "@/lib/types"
+import { formatDate } from "@/lib/utils"
 
 export default function RoomsPage() {
   const router = useRouter()
@@ -125,7 +126,7 @@ export default function RoomsPage() {
             <h1 className="text-2xl font-bold text-gray-900">Available Rooms</h1>
             <p className="text-sm text-gray-500 mt-1">
               {searchData.checkIn && searchData.checkOut
-                ? `${new Date(searchData.checkIn).toLocaleDateString()} - ${new Date(searchData.checkOut).toLocaleDateString()} • ${nights} night${nights > 1 ? "s" : ""} • ${searchData.adults} Guest${searchData.adults > 1 ? "s" : ""}`
+                ? `${formatDate(searchData.checkIn)} - ${formatDate(searchData.checkOut)} • ${nights} night${nights > 1 ? "s" : ""} • ${searchData.adults} Guest${searchData.adults > 1 ? "s" : ""}`
                 : "Select dates to view availability"}
             </p>
           </div>

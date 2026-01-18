@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
+import { formatDate } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -215,11 +216,11 @@ export function CheckoutForm({
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
                                         <p className="text-xs text-gray-500">Check-in</p>
-                                        <p className="font-medium text-sm">{new Date(checkIn).toLocaleDateString()}</p>
+                                        <p className="font-medium text-sm">{formatDate(checkIn)}</p>
                                     </div>
                                     <div>
                                         <p className="text-xs text-gray-500">Check-out</p>
-                                        <p className="font-medium text-sm">{new Date(checkOut).toLocaleDateString()}</p>
+                                        <p className="font-medium text-sm">{formatDate(checkOut)}</p>
                                     </div>
                                 </div>
                                 <Separator />
@@ -433,11 +434,11 @@ export function CheckoutForm({
                         <div className="space-y-2 text-sm">
                             <div className="flex justify-between">
                                 <span className="text-gray-600">Check-in</span>
-                                <span className="font-medium">{new Date(checkIn).toLocaleDateString()}</span>
+                                <span className="font-medium">{formatDate(checkIn)}</span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-gray-600">Check-out</span>
-                                <span className="font-medium">{new Date(checkOut).toLocaleDateString()}</span>
+                                <span className="font-medium">{formatDate(checkOut)}</span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-gray-600">Guests</span>
