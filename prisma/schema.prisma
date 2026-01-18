@@ -127,6 +127,7 @@ model Booking {
   guest_email         String
   guest_phone         String
   guest_address       String?
+  guest_details       Json?     // Stores array of { name: string, age: number, gender: string }
   
   check_in_date       DateTime  @db.Date
   check_out_date      DateTime  @db.Date

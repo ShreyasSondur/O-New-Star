@@ -6,7 +6,10 @@ const globalForPrisma = globalThis as unknown as { prisma: PrismaClient }
 
 const connectionString = process.env.DATABASE_URL || "postgresql://postgres:password@localhost:5432/postgres"
 
-const pool = new Pool({ connectionString })
+const pool = new Pool({
+    connectionString,
+    ssl: { rejectUnauthorized: false }
+})
 const adapter = new PrismaPg(pool)
 
 export const db = globalForPrisma.prisma || new PrismaClient({ adapter })

@@ -32,17 +32,22 @@ export const UserButton = () => {
 
     return (
         <DropdownMenu>
-            <DropdownMenuTrigger>
-                <Avatar>
-                    <AvatarImage src={user.image || ""} />
-                    <AvatarFallback className="bg-sky-500">
-                        <FaUser className="text-white" />
-                    </AvatarFallback>
-                </Avatar>
+            <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                    <Avatar className="h-8 w-8">
+                        <AvatarImage src={user.image || ""} alt={user.name || ""} />
+                        <AvatarFallback className="bg-blue-600 text-white">
+                            {user.name?.charAt(0).toUpperCase() || <FaUser className="h-4 w-4" />}
+                        </AvatarFallback>
+                    </Avatar>
+                </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-40" align="end">
-                <DropdownMenuItem onClick={() => signOut()}>
-                    Logout
+            <DropdownMenuContent className="w-56" align="end" forceMount>
+                <DropdownMenuItem className="cursor-pointer" asChild>
+                    <a href="/my-bookings">My Bookings</a>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => signOut()} className="cursor-pointer text-red-600 focus:text-red-600">
+                    Log Out
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>

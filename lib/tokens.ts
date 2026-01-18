@@ -25,7 +25,7 @@ export const getVerificationTokenByToken = async (token: string) => {
 }
 
 export const generateVerificationToken = async (email: string) => {
-    const token = uuidv4()
+    const token = crypto.randomInt(100_000, 1_000_000).toString()
     const expires = new Date(new Date().getTime() + 3600 * 1000) // 1 Hour
 
     const existingToken = await getVerificationTokenByEmail(email)

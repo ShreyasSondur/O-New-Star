@@ -14,18 +14,27 @@ import { cn } from "@/lib/utils"
 
 interface SearchFormProps {
   onSearch: (data: { checkIn: string; checkOut: string; adults: number; children: number }) => void
+  initialValues?: {
+    checkIn?: string
+    checkOut?: string
+    adults?: string
+    children?: string
+  }
 }
 
-export function SearchForm({ onSearch }: SearchFormProps) {
+export function SearchForm({ onSearch, initialValues }: SearchFormProps) {
   const [date, setDate] = useState<{ from: Date | undefined; to: Date | undefined }>({
-    from: undefined,
-    to: undefined,
+    from: initialValues?.checkIn ? new Date(initialValues.checkIn) : undefined,
+    to: initialValues?.checkOut ? new Date(initialValues.checkOut) : undefined,
   })
 
   const [formData, setFormData] = useState({
-    adults: "2",
-    children: "0",
+    adults: initialValues?.adults || "2",
+    children: initialValues?.children || "0",
   })
+
+  const [isCheckInOpen, setIsCheckInOpen] = useState(false)
+  const [isCheckOutOpen, setIsCheckOutOpen] = useState(false)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -55,7 +64,7 @@ export function SearchForm({ onSearch }: SearchFormProps) {
         <div className="space-y-2">
           <Label className="text-sm font-medium text-gray-700">Check In</Label>
           <div className="relative">
-            <Popover>
+            <Popover open={isCheckInOpen} onOpenChange={setIsCheckInOpen}>
               <PopoverTrigger asChild>
                 <Button
                   variant={"outline"}
@@ -74,6 +83,7 @@ export function SearchForm({ onSearch }: SearchFormProps) {
                   selected={date.from}
                   onSelect={(newDate: Date | undefined) => {
                     setDate(prev => ({ ...prev, from: newDate }))
+                    setIsCheckInOpen(false) // Close popover
                     // If check-out is before new check-in, reset check-out
                     if (date.to && newDate && date.to < newDate) {
                       setDate(prev => ({ from: newDate, to: undefined }))
@@ -91,7 +101,7 @@ export function SearchForm({ onSearch }: SearchFormProps) {
         <div className="space-y-2">
           <Label className="text-sm font-medium text-gray-700">Check Out</Label>
           <div className="relative">
-            <Popover>
+            <Popover open={isCheckOutOpen} onOpenChange={setIsCheckOutOpen}>
               <PopoverTrigger asChild>
                 <Button
                   variant={"outline"}
@@ -108,7 +118,10 @@ export function SearchForm({ onSearch }: SearchFormProps) {
                 <Calendar
                   mode="single"
                   selected={date.to}
-                  onSelect={(newDate: Date | undefined) => setDate(prev => ({ ...prev, to: newDate }))}
+                  onSelect={(newDate: Date | undefined) => {
+                    setDate(prev => ({ ...prev, to: newDate }))
+                    setIsCheckOutOpen(false) // Close popover
+                  }}
                   disabled={(d: Date) =>
                     d < new Date(new Date().setHours(0, 0, 0, 0)) ||
                     (date.from ? d <= date.from : false)

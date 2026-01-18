@@ -20,6 +20,7 @@ export const {
     adapter: PrismaAdapter(prisma),
     session: { strategy: "jwt" },
     secret: process.env.AUTH_SECRET || "secret",
+    debug: true,
     ...authConfig,
     providers: [
         Google({

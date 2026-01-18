@@ -8,19 +8,24 @@ import { Users, Wifi, Tv, Wind, Wine, Check, ArrowRight } from "lucide-react"
 import type { AvailableRoom } from "@/lib/types"
 import { cn } from "@/lib/utils"
 
+import Link from "next/link"
+
 interface RoomCardProps {
   room: AvailableRoom
   nights: number
-  onBook: (room: AvailableRoom) => void
+  checkIn: string
+  checkOut: string
+  adults: number
+  children: number
 }
 
-export function RoomCard({ room, nights, onBook }: RoomCardProps) {
+export function RoomCard({ room, nights, checkIn, checkOut, adults, children }: RoomCardProps) {
   const [isLoaded, setIsLoaded] = useState(false)
   const totalPrice = room.total_price || (room.price_per_night * nights);
 
   return (
     <Card className="group overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col h-full bg-white rounded-2xl ring-1 ring-gray-100">
-      {/* Image Section */}
+      {/* ... existing image and content sections ... */}
       <div className="relative h-64 overflow-hidden bg-gray-100">
         {!isLoaded && (
           <div className="absolute inset-0 bg-gray-200 animate-pulse" />
@@ -110,12 +115,16 @@ export function RoomCard({ room, nights, onBook }: RoomCardProps) {
           </div>
         </div>
 
-        <Button
-          className="w-full bg-[#2671D9] hover:bg-[#1f5fc0] h-12 text-base font-semibold shadow-blue-200 shadow-lg hover:shadow-blue-300 transition-all active:scale-[0.98]"
-          onClick={() => onBook(room)}
+        <Link
+          href={`/book?roomId=${room.id}&checkIn=${checkIn}&checkOut=${checkOut}&adults=${adults}&children=${children}`}
+          className="w-full block"
         >
-          Book This Room <ArrowRight className="ml-2 h-4 w-4" />
-        </Button>
+          <Button
+            className="w-full bg-[#2671D9] hover:bg-[#1f5fc0] h-12 text-base font-semibold shadow-blue-200 shadow-lg hover:shadow-blue-300 transition-all active:scale-[0.98]"
+          >
+            Book This Room <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
+        </Link>
       </div>
     </Card>
   )

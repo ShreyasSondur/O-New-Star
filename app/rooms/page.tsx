@@ -10,8 +10,6 @@ import { SearchForm } from "@/components/search-form"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { toast } from "sonner"
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
-import { BookingForm } from "@/components/booking-form"
 import type { AvailableRoom } from "@/lib/types"
 
 export default function RoomsPage() {
@@ -19,7 +17,6 @@ export default function RoomsPage() {
   const searchParams = useSearchParams()
   const [rooms, setRooms] = useState<AvailableRoom[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [selectedRoom, setSelectedRoom] = useState<AvailableRoom | null>(null)
 
   const searchData = {
     checkIn: searchParams.get("checkIn") || "",
@@ -34,9 +31,10 @@ export default function RoomsPage() {
     } else {
       setIsLoading(false)
     }
-  }, [])
+  }, [searchParams]) // Re-run when URL params change
 
   const searchRooms = async () => {
+    setIsLoading(true) // Ensure loading state is true when verifying
     try {
       console.log("[v0] Searching for available rooms...")
       const res = await fetch("/api/search", {
@@ -105,14 +103,21 @@ export default function RoomsPage() {
 
         {/* Search Bar Section */}
         <div className="mb-8 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-          <SearchForm onSearch={(data) => {
-            const params = new URLSearchParams()
-            params.set("checkIn", data.checkIn)
-            params.set("checkOut", data.checkOut)
-            params.set("adults", data.adults.toString())
-            params.set("children", data.children.toString())
-            router.push(`/rooms?${params.toString()}`)
-          }} />
+          <SearchForm
+            initialValues={{
+              checkIn: searchData.checkIn,
+              checkOut: searchData.checkOut,
+              adults: searchData.adults.toString(),
+              children: searchData.children.toString()
+            }}
+            onSearch={(data) => {
+              const params = new URLSearchParams()
+              params.set("checkIn", data.checkIn)
+              params.set("checkOut", data.checkOut)
+              params.set("adults", data.adults.toString())
+              params.set("children", data.children.toString())
+              router.push(`/rooms?${params.toString()}`)
+            }} />
         </div>
 
         <div className="mb-6 flex justify-between items-end">
@@ -138,29 +143,15 @@ export default function RoomsPage() {
                 key={room.id}
                 room={room}
                 nights={nights}
-                onBook={setSelectedRoom}
+                checkIn={searchData.checkIn}
+                checkOut={searchData.checkOut}
+                adults={searchData.adults}
+                children={searchData.children}
               />
             ))}
           </div>
         )}
       </div>
-
-      <Dialog open={!!selectedRoom} onOpenChange={(open) => !open && setSelectedRoom(null)}>
-        <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
-          {selectedRoom && (
-            <BookingForm
-              room={selectedRoom}
-              searchParams={searchData}
-              onComplete={() => {
-                setSelectedRoom(null)
-                searchRooms()
-              }}
-              onCancel={() => setSelectedRoom(null)}
-              onBookingSuccess={() => searchRooms()}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   )
 }

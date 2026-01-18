@@ -171,6 +171,7 @@ export function AdminDashboard() {
                   <th className="py-3 px-4 font-medium text-gray-500">Check In</th>
                   <th className="py-3 px-4 font-medium text-gray-500">Status</th>
                   <th className="py-3 px-4 font-medium text-gray-500 text-right">Amount</th>
+                  <th className="py-3 px-4 font-medium text-gray-500 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -189,7 +190,10 @@ export function AdminDashboard() {
                         {guest.status}
                       </Badge>
                     </td>
-                    <td className="py-4 px-4 text-right font-mono text-gray-700">₹{guest.total_amount}</td>
+                    <td className="py-4 px-4 text-right font-mono text-gray-700">₹{Number(guest.total_amount).toLocaleString()}</td>
+                    <td className="py-4 px-4 text-right">
+                      <GuestDetailsDialog guest={guest} />
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -198,6 +202,66 @@ export function AdminDashboard() {
         </div>
       </Card>
     </div>
+  )
+}
+
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Separator } from "@/components/ui/separator"
+
+function GuestDetailsDialog({ guest }: { guest: any }) {
+  const details = guest.guest_details as any[] || []
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="ghost" size="sm">View Details</Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Booking Details</DialogTitle>
+          <DialogDescription>Booking ID: {guest.id}</DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-4">
+          <div>
+            <h4 className="font-semibold text-sm mb-1">Primary Contact</h4>
+            <div className="text-sm text-gray-600">
+              <p>Name: {guest.name}</p>
+              <p>Email: {guest.email}</p>
+              <p>Phone: {guest.phone}</p>
+            </div>
+          </div>
+
+          <Separator />
+
+          <div>
+            <h4 className="font-semibold text-sm mb-2">Guest List ({details.length})</h4>
+            {details.length > 0 ? (
+              <div className="space-y-2">
+                {details.map((d, i) => (
+                  <div key={i} className="flex items-center justify-between bg-gray-50 p-2 rounded text-sm">
+                    <span className="font-medium">{d.name}</span>
+                    <div className="text-gray-500 text-xs flex gap-3">
+                      <span>Age: {d.age}</span>
+                      <span className="capitalize">Sex: {d.gender}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-500 italic">No additional guest details recorded.</p>
+            )}
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   )
 }
 

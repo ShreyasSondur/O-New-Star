@@ -1,50 +1,53 @@
 import { NextResponse } from "next/server"
-import { getDb } from "@/lib/db"
+import { db } from "@/lib/prisma"
 
 export async function GET(request: Request) {
     try {
         const { searchParams } = new URL(request.url)
-        const filter = searchParams.get("filter") || "today" // today, week, month
+        const filter = searchParams.get("filter") || "today"
+        const today = new Date()
+        today.setHours(0, 0, 0, 0)
 
-        const db = await getDb()
-        const today = new Date().toISOString().split('T')[0]
-
-        let dateCondition = ""
-        let params: any[] = []
+        let startDate = new Date(today)
+        let endDate = new Date(today)
 
         if (filter === "today") {
-            dateCondition = "check_in_date = $1"
-            params = [today]
+            endDate.setDate(endDate.getDate() + 1)
         } else if (filter === "week") {
-            // Upcoming week
-            dateCondition = "check_in_date >= $1 AND check_in_date <= $1::date + INTERVAL '7 days'"
-            params = [today]
+            endDate.setDate(endDate.getDate() + 7)
         } else if (filter === "month") {
-            // Upcoming month
-            dateCondition = "check_in_date >= $1 AND check_in_date <= $1::date + INTERVAL '30 days'"
-            params = [today]
+            endDate.setMonth(endDate.getMonth() + 1)
         }
 
-        // Fetch guests checking in based on filter
-        const query = `
-      SELECT 
-        b.id,
-        b.guest_name as name,
-        b.room_id,
-        r.room_number as "roomNumber",
-        b.status,
-        to_char(b.check_in_date, 'YYYY-MM-DD') as date,
-        b.total_amount
-      FROM bookings b
-      JOIN rooms r ON b.room_id = r.id
-      WHERE ${dateCondition}
-      ORDER BY b.check_in_date ASC
-    `
+        const bookings = await db.booking.findMany({
+            where: {
+                check_in_date: {
+                    gte: startDate,
+                    lt: endDate
+                }
+            },
+            include: {
+                room: true
+            },
+            orderBy: {
+                check_in_date: 'asc'
+            }
+        })
 
-        const result = await db.query(query, params)
+        const mappedGuests = bookings.map(booking => ({
+            id: booking.id,
+            name: booking.guest_name,
+            email: booking.guest_email,
+            phone: booking.guest_phone,
+            roomNumber: booking.room?.room_number || "N/A",
+            status: booking.status,
+            date: booking.check_in_date.toISOString().split('T')[0],
+            total_amount: booking.total_amount,
+            guest_details: booking.guest_details
+        }))
 
         return NextResponse.json({
-            guests: result.rows
+            guests: mappedGuests
         })
 
     } catch (error) {
