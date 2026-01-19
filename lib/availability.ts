@@ -1,22 +1,52 @@
 import { query } from "./db"
 import type { AvailableRoom } from "./types"
+import { parse, isValid, differenceInCalendarDays, addDays, format } from "date-fns"
 
 /**
  * AVAILABILITY ENGINE
  * This is the heart of the system - it guarantees no double booking
  */
 
+/**
+ * Robustly parses a date string. Supports various formats if needed,
+ * but primarily expects ISO (yyyy-MM-dd).
+ * Returns null if invalid.
+ */
+export function parseDate(dateStr: string): Date | null {
+  if (!dateStr) return null
+
+  // Try standard ISO first
+  let date = new Date(dateStr)
+
+  // If invalid, try manual parsing for common formats if strictly needed,
+  // but for this app, we should enforce ISO from the frontend.
+  // However, `new Date()` can be inconsistent across environments.
+
+  if (!isValid(date)) {
+    // Fallback: try parsing assuming yyyy-MM-dd if simple new Date failed
+    // numeric check
+    const parts = dateStr.split(/[-/]/)
+    if (parts.length === 3) {
+      date = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]))
+    }
+  }
+
+  return isValid(date) ? date : null
+}
+
 // Generate array of dates between start and end (inclusive)
 export function generateDateRange(startDate: string, endDate: string): string[] {
   const dates: string[] = []
-  const start = new Date(startDate)
-  const end = new Date(endDate)
+  const start = parseDate(startDate)
+  const end = parseDate(endDate)
 
-  // Don't include checkout date in range
-  const current = new Date(start)
+  if (!start || !end || start >= end) return []
+
+  // Don't include checkout date in range for booking logic (nights)
+  let current = start
   while (current < end) {
-    dates.push(current.toISOString().split("T")[0])
-    current.setDate(current.getDate() + 1)
+    dates.push(format(current, "yyyy-MM-dd"))
+    current = addDays(current, 1)
   }
 
   return dates
@@ -24,11 +54,13 @@ export function generateDateRange(startDate: string, endDate: string): string[] 
 
 // Calculate number of nights
 export function calculateNights(checkIn: string, checkOut: string): number {
-  const start = new Date(checkIn)
-  const end = new Date(checkOut)
-  const diffTime = Math.abs(end.getTime() - start.getTime())
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-  return diffDays
+  const start = parseDate(checkIn)
+  const end = parseDate(checkOut)
+
+  if (!start || !end) return 0
+
+  const diffDays = differenceInCalendarDays(end, start)
+  return diffDays > 0 ? diffDays : 0
 }
 
 /**

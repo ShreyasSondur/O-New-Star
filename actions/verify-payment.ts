@@ -4,6 +4,7 @@ import { auth } from "@/auth"
 import { db } from "@/lib/prisma"
 import { verifyRazorpaySignature } from "@/lib/razorpay"
 import { calculateNights } from "@/lib/availability"
+import { formatDate } from "@/lib/utils"
 
 interface VerifyPaymentParams {
     razorpay_order_id: string

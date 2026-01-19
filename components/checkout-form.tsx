@@ -16,6 +16,7 @@ import { toast } from "sonner"
 import { createOrder } from "@/actions/create-order"
 import { verifyPayment } from "@/actions/verify-payment"
 import type { AvailableRoom } from "@/lib/types"
+import { calculateNights } from "@/lib/availability"
 
 interface CheckoutFormProps {
     room: AvailableRoom

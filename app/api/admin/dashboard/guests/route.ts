@@ -7,34 +7,61 @@ export async function GET(request: Request) {
     try {
         const { searchParams } = new URL(request.url)
         const filter = searchParams.get("filter") || "today"
+        const page = parseInt(searchParams.get("page") || "1")
+        const limit = parseInt(searchParams.get("limit") || "10")
+        const skip = (page - 1) * limit
+
         const today = new Date()
         today.setHours(0, 0, 0, 0)
 
-        let startDate = new Date(today)
-        let endDate = new Date(today)
+        let startDate: Date
+        let endDate: Date
 
+        // Define exact ranges
         if (filter === "today") {
+            startDate = new Date(today)
+            endDate = new Date(today)
             endDate.setDate(endDate.getDate() + 1)
         } else if (filter === "week") {
+            startDate = new Date(today)
+            // Start of week (Sunday) ? Or just next 7 days? 
+            // "week" in dashboard context usually means "Upcoming Week" or "This Week"
+            // Preserving original logic: from today to +7 days
+            endDate = new Date(today)
             endDate.setDate(endDate.getDate() + 7)
         } else if (filter === "month") {
+            startDate = new Date(today)
+            endDate = new Date(today)
             endDate.setMonth(endDate.getMonth() + 1)
+        } else {
+            // Default fallback
+            startDate = new Date(today)
+            endDate = new Date(today)
+            endDate.setDate(endDate.getDate() + 1)
         }
 
-        const bookings = await db.booking.findMany({
-            where: {
-                check_in_date: {
-                    gte: startDate,
-                    lt: endDate
-                }
-            },
-            include: {
-                room: true
-            },
-            orderBy: {
-                check_in_date: 'asc'
+        const whereClause = {
+            check_in_date: {
+                gte: startDate,
+                lt: endDate
             }
-        })
+        }
+
+        // Parallel fetch: Count and Data
+        const [totalCount, bookings] = await Promise.all([
+            db.booking.count({ where: whereClause }),
+            db.booking.findMany({
+                where: whereClause,
+                include: {
+                    room: true
+                },
+                orderBy: {
+                    check_in_date: 'asc'
+                },
+                take: limit,
+                skip: skip
+            })
+        ])
 
         const mappedGuests = bookings.map(booking => ({
             id: booking.id,
@@ -49,7 +76,13 @@ export async function GET(request: Request) {
         }))
 
         return NextResponse.json({
-            guests: mappedGuests
+            guests: mappedGuests,
+            pagination: {
+                total: totalCount,
+                page,
+                limit,
+                totalPages: Math.ceil(totalCount / limit)
+            }
         })
 
     } catch (error) {

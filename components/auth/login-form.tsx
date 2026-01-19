@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useState, useTransition } from "react"
 import { useSearchParams } from "next/navigation"
+import Link from "next/link"
 
 import { LoginSchema } from "@/actions/schemas" // Fixed import
 
@@ -89,6 +90,29 @@ export const LoginForm = () => {
                                                 placeholder="123456"
                                             />
                                         </FormControl>
+                                        <Button
+                                            size="sm"
+                                            variant="link"
+                                            type="button" // Prevent form submission
+                                            onClick={() => {
+                                                const email = form.getValues("email")
+                                                if (!email) {
+                                                    setError("Email is required for resend.")
+                                                    return
+                                                }
+                                                startTransition(() => {
+                                                    import("@/actions/resend-code").then(({ resendCode }) => {
+                                                        resendCode(email).then((data) => {
+                                                            if (data.error) setError(data.error)
+                                                            if (data.success) setSuccess(data.success)
+                                                        })
+                                                    })
+                                                })
+                                            }}
+                                            className="px-0 font-normal"
+                                        >
+                                            Resend Code
+                                        </Button>
                                         <FormMessage />
                                     </FormItem>
                                 )}
@@ -128,6 +152,16 @@ export const LoginForm = () => {
                                                     type="password"
                                                 />
                                             </FormControl>
+                                            <Button
+                                                size="sm"
+                                                variant="link"
+                                                asChild
+                                                className="px-0 font-normal"
+                                            >
+                                                <Link href="/auth/reset">
+                                                    Forgot password?
+                                                </Link>
+                                            </Button>
                                             <FormMessage />
                                         </FormItem>
                                     )}

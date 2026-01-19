@@ -41,26 +41,33 @@ export function AdminDashboard() {
   const [guestList, setGuestList] = useState<any[]>([])
   const [filter, setFilter] = useState<"today" | "week" | "month">("week")
   const [isLoading, setIsLoading] = useState(true)
+  const [page, setPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
 
   useEffect(() => {
     fetchData()
-  }, [filter])
+  }, [filter, page])
 
   const fetchData = async () => {
     setIsLoading(true)
     try {
-      // Fetch Stats (Overview)
-      const statsRes = await fetch("/api/admin/dashboard/stats")
+      // Parallel Fetch for efficiency
+      const [statsRes, guestsRes] = await Promise.all([
+        fetch("/api/admin/dashboard/stats"),
+        fetch(`/api/admin/dashboard/guests?filter=${filter}&page=${page}&limit=10`)
+      ])
+
       if (statsRes.ok) {
         const statsData = await statsRes.json()
         setStats(statsData)
       }
 
-      // Fetch Guests based on filter
-      const guestsRes = await fetch(`/api/admin/dashboard/guests?filter=${filter}`)
       if (guestsRes.ok) {
         const guestsData = await guestsRes.json()
         setGuestList(guestsData.guests)
+        if (guestsData.pagination) {
+          setTotalPages(guestsData.pagination.totalPages)
+        }
       }
 
     } catch (error) {
@@ -68,6 +75,12 @@ export function AdminDashboard() {
       toast.error("Failed to load dashboard data")
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setPage(newPage)
     }
   }
 
@@ -85,7 +98,7 @@ export function AdminDashboard() {
           {(["today", "week", "month"] as const).map((f) => (
             <button
               key={f}
-              onClick={() => setFilter(f)}
+              onClick={() => { setFilter(f); setPage(1); }}
               className={cn(
                 "px-4 py-2 rounded-md text-sm font-medium transition-all capitalize cursor-pointer",
                 filter === f ? "bg-white text-blue-600 shadow-sm" : "text-gray-600 hover:text-gray-900"
@@ -152,9 +165,11 @@ export function AdminDashboard() {
       <Card className="p-6">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-xl font-bold capitalize">{filter}s Guests</h3>
-          <Button variant="outline" size="sm" onClick={fetchData}>
-            Refresh
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={() => fetchData()}>
+              Refresh
+            </Button>
+          </div>
         </div>
 
         <div className="overflow-x-auto">
@@ -163,41 +178,68 @@ export function AdminDashboard() {
           ) : guestList.length === 0 ? (
             <div className="text-center py-8 text-gray-500">No guests found for this period.</div>
           ) : (
-            <table className="w-full">
-              <thead>
-                <tr className="border-b text-left">
-                  <th className="py-3 px-4 font-medium text-gray-500">Guest Name</th>
-                  <th className="py-3 px-4 font-medium text-gray-500">Room</th>
-                  <th className="py-3 px-4 font-medium text-gray-500">Check In</th>
-                  <th className="py-3 px-4 font-medium text-gray-500">Status</th>
-                  <th className="py-3 px-4 font-medium text-gray-500 text-right">Amount</th>
-                  <th className="py-3 px-4 font-medium text-gray-500 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {guestList.map((guest) => (
-                  <tr key={guest.id} className="border-b last:border-0 hover:bg-gray-50/50">
-                    <td className="py-4 px-4 font-semibold text-gray-900">{guest.name}</td>
-                    <td className="py-4 px-4 text-gray-600">Room {guest.roomNumber}</td>
-                    <td className="py-4 px-4 text-gray-600 text-sm">
-                      <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4 text-gray-400" />
-                        {formatDate(guest.date)}
-                      </div>
-                    </td>
-                    <td className="py-4 px-4">
-                      <Badge variant={guest.status === 'CONFIRMED' ? 'default' : 'secondary'}>
-                        {guest.status}
-                      </Badge>
-                    </td>
-                    <td className="py-4 px-4 text-right font-mono text-gray-700">₹{Number(guest.total_amount).toLocaleString()}</td>
-                    <td className="py-4 px-4 text-right">
-                      <GuestDetailsDialog guest={guest} />
-                    </td>
+            <>
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b text-left">
+                    <th className="py-3 px-4 font-medium text-gray-500">Guest Name</th>
+                    <th className="py-3 px-4 font-medium text-gray-500">Room</th>
+                    <th className="py-3 px-4 font-medium text-gray-500">Check In</th>
+                    <th className="py-3 px-4 font-medium text-gray-500">Status</th>
+                    <th className="py-3 px-4 font-medium text-gray-500 text-right">Amount</th>
+                    <th className="py-3 px-4 font-medium text-gray-500 text-right">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {guestList.map((guest) => (
+                    <tr key={guest.id} className="border-b last:border-0 hover:bg-gray-50/50">
+                      <td className="py-4 px-4 font-semibold text-gray-900">{guest.name}</td>
+                      <td className="py-4 px-4 text-gray-600">Room {guest.roomNumber}</td>
+                      <td className="py-4 px-4 text-gray-600 text-sm">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="h-4 w-4 text-gray-400" />
+                          {formatDate(guest.date)}
+                        </div>
+                      </td>
+                      <td className="py-4 px-4">
+                        <Badge variant={guest.status === 'CONFIRMED' ? 'default' : 'secondary'}>
+                          {guest.status}
+                        </Badge>
+                      </td>
+                      <td className="py-4 px-4 text-right font-mono text-gray-700">₹{Number(guest.total_amount).toLocaleString()}</td>
+                      <td className="py-4 px-4 text-right">
+                        <GuestDetailsDialog guest={guest} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              {/* Pagination Controls */}
+              <div className="flex items-center justify-between mt-4 border-t pt-4">
+                <div className="text-sm text-gray-500">
+                  Page {page} of {totalPages}
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePageChange(page - 1)}
+                    disabled={page <= 1}
+                  >
+                    Previous
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePageChange(page + 1)}
+                    disabled={page >= totalPages}
+                  >
+                    Next
+                  </Button>
+                </div>
+              </div>
+            </>
           )}
         </div>
       </Card>
