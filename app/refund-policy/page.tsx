@@ -47,7 +47,7 @@ export default function RefundPolicyPage() {
                         </p>
                         <ul className="list-disc pl-6 mt-2 space-y-1">
                             <li>Email: info@onewstar.com</li>
-                            <li>Phone: +91-6370949XXX</li>
+                            <li>Phone: 80184 07510</li>
                         </ul>
                     </section>
                 </div>

@@ -8,6 +8,7 @@ import { MapPin, Phone, Mail, Wifi, Car, Coffee, Wind, Tv, MapPinned, Quote } fr
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { Gallery } from "@/components/Gallery"
 
 export default function HomePage() {
   const [searchData, setSearchData] = useState<any>(null)
@@ -104,78 +105,6 @@ export default function HomePage() {
                 perfect blend of comfort, convenience, and value.
               </p>
 
-              <div className="space-y-6">
-                {/* Prime Location */}
-                <div className="flex gap-4">
-                  <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-[#2671D9]/10 flex items-center justify-center">
-                    <MapPin className="w-6 h-6 text-[#2671D9]" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-1">Prime Location</h4>
-                    <p className="text-gray-600 text-sm">
-                      Located in the heart of the city with easy access to public transport, restaurants, and local
-                      attractions.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Modern Amenities */}
-                <div className="flex gap-4">
-                  <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-[#2671D9]/10 flex items-center justify-center">
-                    <Wifi className="w-6 h-6 text-[#2671D9]" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-1">Modern Amenities</h4>
-                    <p className="text-gray-600 text-sm">
-                      Our hotel offers contemporary accommodations with all the essential amenities for a comfortable
-                      and relaxing stay.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Exceptional Service */}
-                <div className="flex gap-4">
-                  <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-[#2671D9]/10 flex items-center justify-center">
-                    <Coffee className="w-6 h-6 text-[#2671D9]" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-1">Exceptional Service</h4>
-                    <p className="text-gray-600 text-sm">
-                      Our friendly and professional staff is always ready to assist you, ensuring your stay is pleasant
-                      and memorable.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <p className="text-gray-600 mt-8 leading-relaxed">
-                Our commitment is to deliver quality service at budget-friendly prices, making us the perfect choice for
-                travelers seeking value without compromising on comfort.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Hotel Amenities Section */}
-      <section id="amenities" className="py-20 bg-white">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-3">Hotel Amenities</h2>
-            <p className="text-gray-600">Everything you need for a comfortable stay</p>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 max-w-6xl mx-auto">
-            {/* Free WiFi */}
-            <div className="bg-gray-50 rounded-xl p-6 text-center hover:shadow-lg transition-shadow">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#2671D9]/10 flex items-center justify-center">
-                <Wifi className="w-8 h-8 text-[#2671D9]" />
-              </div>
-              <h4 className="font-semibold text-gray-900 text-sm">Free WiFi</h4>
-            </div>
-
-            {/* Free Parking */}
-            <div className="bg-gray-50 rounded-xl p-6 text-center hover:shadow-lg transition-shadow">
               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#2671D9]/10 flex items-center justify-center">
                 <Car className="w-8 h-8 text-[#2671D9]" />
               </div>
@@ -280,6 +209,8 @@ export default function HomePage() {
         </div>
       </section>
 
+      <Gallery />
+
       {/* Location Section */}
       <section id="location" className="py-20 bg-white">
         <div className="container mx-auto px-6">
@@ -319,9 +250,9 @@ export default function HomePage() {
                   <div>
                     <h4 className="font-semibold text-gray-900 mb-1">Contact</h4>
                     <p className="text-gray-600 text-sm">
-                      +91-6370949<span className="text-gray-400">XX</span>
+                      80184 07510
                       <br />
-                      +91-9583125<span className="text-gray-400">XX</span>
+                      80184 07510
                     </p>
                   </div>
                 </div>

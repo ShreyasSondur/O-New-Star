@@ -60,9 +60,9 @@ export function SiteFooter() {
                             <li className="flex gap-2 text-gray-400 text-sm">
                                 <Phone className="w-5 h-5 flex-shrink-0 text-[#2671D9]" />
                                 <span>
-                                    +91-6370949XXX
+                                    80184 07510
                                     <br />
-                                    +91-9583125XXX
+                                    80184 07510
                                 </span>
                             </li>
                             <li className="flex gap-2 text-gray-400 text-sm">
