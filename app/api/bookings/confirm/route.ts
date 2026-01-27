@@ -54,6 +54,48 @@ export async function POST(request: Request) {
       return booking
     })
 
+    // Fetch complete booking details for email (including room)
+    const { query } = await import("@/lib/db")
+    const fullBookingResult = await query(
+      `SELECT b.*, r.room_name, r.room_number 
+         FROM bookings b 
+         JOIN rooms r ON b.room_id = r.id 
+         WHERE b.id = $1`,
+      [bookingId]
+    )
+
+    if (fullBookingResult.rows.length > 0) {
+      const fullBooking = fullBookingResult.rows[0]
+      const { sendOwnerBookingNotification, sendBookingConfirmationEmail } = await import("@/lib/mail")
+
+      // Send Owner Notification
+      await sendOwnerBookingNotification({
+        bookingId: fullBooking.id.toString(),
+        guestName: fullBooking.guest_name,
+        guestEmail: fullBooking.guest_email,
+        guestPhone: fullBooking.guest_phone,
+        roomName: fullBooking.room_name,
+        checkIn: new Date(fullBooking.check_in_date).toDateString(),
+        checkOut: new Date(fullBooking.check_out_date).toDateString(),
+        totalAmount: Number(fullBooking.total_amount),
+        adults: fullBooking.num_adults,
+        children: fullBooking.num_children,
+        numExtraBeds: fullBooking.num_extra_beds || 0
+      })
+
+      // Send Guest Confirmation Email
+      await sendBookingConfirmationEmail(fullBooking.guest_email, {
+        bookingId: fullBooking.id.toString(),
+        guestName: fullBooking.guest_name,
+        roomName: fullBooking.room_name,
+        checkIn: new Date(fullBooking.check_in_date).toDateString(),
+        checkOut: new Date(fullBooking.check_out_date).toDateString(),
+        totalAmount: Number(fullBooking.total_amount),
+        adults: fullBooking.num_adults,
+        children: fullBooking.num_children
+      })
+    }
+
     return NextResponse.json({
       success: true,
       message: "Booking confirmed successfully",

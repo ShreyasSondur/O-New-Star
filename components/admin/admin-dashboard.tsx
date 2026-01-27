@@ -39,7 +39,7 @@ export function AdminDashboard() {
     occupancyRate: 0,
   })
   const [guestList, setGuestList] = useState<any[]>([])
-  const [filter, setFilter] = useState<"today" | "week" | "month">("week")
+  const [filter, setFilter] = useState<"today" | "week" | "month" | "all">("week")
   const [isLoading, setIsLoading] = useState(true)
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
@@ -95,7 +95,7 @@ export function AdminDashboard() {
           </div>
         </div>
         <div className="flex bg-gray-100 p-1 rounded-lg">
-          {(["today", "week", "month"] as const).map((f) => (
+          {(["today", "week", "month", "all"] as const).map((f) => (
             <button
               key={f}
               onClick={() => { setFilter(f); setPage(1); }}

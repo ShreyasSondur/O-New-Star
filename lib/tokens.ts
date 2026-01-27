@@ -104,7 +104,7 @@ export const getPasswordResetTokenByEmail = async (email: string) => {
 }
 
 export const generatePasswordResetToken = async (email: string) => {
-    const token = uuidv4()
+    const token = crypto.randomInt(100_000, 1_000_000).toString()
     const expires = new Date(new Date().getTime() + 3600 * 1000) // 1 Hour
 
     const existingToken = await getPasswordResetTokenByEmail(email)

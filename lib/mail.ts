@@ -9,10 +9,11 @@ export const sendTwoFactorTokenEmail = async (
     token: string
 ) => {
     await resend.emails.send({
-        from: "onboarding@resend.dev", // Change to verified domain in production
+        from: "Contact <contact@onewstar.in>",
         to: email,
         subject: "2FA Code",
-        html: `<p>Your 2FA code: ${token}</p>`
+        html: `<p>Your 2FA code: ${token}</p>`,
+        text: `Your 2FA code: ${token}`
     })
 }
 
@@ -22,7 +23,7 @@ export const sendVerificationEmail = async (
 ) => {
     try {
         const data = await resend.emails.send({
-            from: "onboarding@resend.dev",
+            from: "Contact <contact@onewstar.in>",
             to: email,
             subject: "Confirm your email address",
             html: `
@@ -35,8 +36,9 @@ export const sendVerificationEmail = async (
                         </span>
                     </div>
                     <p style="color: #999; text-align: center; font-size: 12px;">If you did not request this, please ignore this email.</p>
-                </div>
             `
+            ,
+            text: `Confirm Your Email Address\n\nThank you for registering! Please use the following code to complete your verification:\n\n${token}\n\nIf you did not request this, please ignore this email.`
         })
         console.log("Email sent successfully:", data);
     } catch (error) {
@@ -61,7 +63,7 @@ export const sendBookingConfirmationEmail = async (
         const { bookingId, guestName, roomName, checkIn, checkOut, totalAmount, adults, children } = bookingDetails
 
         const data = await resend.emails.send({
-            from: "onboarding@resend.dev",
+            from: "Contact <contact@onewstar.in>",
             to: email,
             subject: `Booking Confirmed - #${bookingId} - O New Star Lodge`,
             html: `
@@ -135,7 +137,8 @@ export const sendBookingConfirmationEmail = async (
                 </div>
             </body>
             </html>
-            `
+            `,
+            text: `Booking Confirmed - #${bookingId}\n\nHello ${guestName},\n\nGreat news! Your payment was successful and your booking has been confirmed.\n\nBooking ID: #${bookingId}\nRoom: ${roomName}\nCheck-in: ${checkIn}\nCheck-out: ${checkOut}\nGuests: ${adults} Adults, ${children} Children\nTotal Paid: ₹${totalAmount.toLocaleString()}\n\nView details at ${domain}/my-bookings`
         })
         console.log("Confirmation Email sent:", data)
     } catch (error) {
@@ -147,12 +150,86 @@ export const sendPasswordResetEmail = async (
     email: string,
     token: string
 ) => {
-    const resetLink = `${domain}/auth/new-password?token=${token}`
-
     await resend.emails.send({
-        from: "onboarding@resend.dev",
+        from: "Support <contact@onewstar.in>",
         to: email,
         subject: "Reset your password",
-        html: `<p>Click <a href="${resetLink}">here</a> to reset password.</p>`
+        html: `
+        <div style="font-family: sans-serif; font-size: 16px; color: #333;">
+            <p>Hello,</p>
+            <p>Here is your code to reset your password:</p>
+            <p style="font-size: 24px; font-weight: bold; color: #000; letter-spacing: 2px; margin: 16px 0;">
+                ${token}
+            </p>
+            <p>This code expires in 1 hour.</p>
+        </div>
+        `,
+        text: `Your password reset code is: ${token}`
     })
+}
+
+export const sendOwnerBookingNotification = async (
+    bookingDetails: {
+        bookingId: string
+        guestName: string
+        guestEmail: string
+        guestPhone: string
+        roomName: string
+        checkIn: string
+        checkOut: string
+        totalAmount: number
+        adults: number
+        children: number
+        numExtraBeds: number
+    }
+) => {
+    try {
+        const { bookingId, guestName, guestEmail, guestPhone, roomName, checkIn, checkOut, totalAmount, adults, children, numExtraBeds } = bookingDetails
+
+        const ownerEmail = process.env.OWNER_EMAIL || "contact@onewstar.in"
+
+        const data = await resend.emails.send({
+            from: "Contact <contact@onewstar.in>",
+            to: ownerEmail,
+            subject: `New Booking Alert! - #${bookingId}`,
+            html: `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    body { font-family: Arial, sans-serif; background-color: #f9fafb; padding: 20px; }
+                    .container { max-width: 600px; margin: 0 auto; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; }
+                    h2 { color: #111827; margin-bottom: 20px; }
+                    .detail-row { border-bottom: 1px solid #f3f4f6; padding: 10px 0; display: flex; justify-content: space-between; }
+                    .label { font-weight: bold; color: #4b5563; }
+                    .value { color: #111827; }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <h2>New Booking Received! 🎉</h2>
+                    <p>A new booking has been confirmed.</p>
+                    
+                    <div class="detail-row"><span class="label">Booking ID</span><span class="value">#${bookingId}</span></div>
+                    <div class="detail-row"><span class="label">Guest Name</span><span class="value">${guestName}</span></div>
+                    <div class="detail-row"><span class="label">Guest Phone</span><span class="value">${guestPhone}</span></div>
+                    <div class="detail-row"><span class="label">Guest Email</span><span class="value">${guestEmail}</span></div>
+                    <div class="detail-row"><span class="label">Room</span><span class="value">${roomName}</span></div>
+                    <div class="detail-row"><span class="label">Check-In</span><span class="value">${checkIn}</span></div>
+                    <div class="detail-row"><span class="label">Check-Out</span><span class="value">${checkOut}</span></div>
+                    <div class="detail-row"><span class="label">Guests</span><span class="value">${adults} Adults, ${children} Children</span></div>
+                     ${numExtraBeds > 0 ? `<div class="detail-row"><span class="label">Extra Beds</span><span class="value">${numExtraBeds}</span></div>` : ''}
+                    <div class="detail-row"><span class="label">Total Amount</span><span class="value">₹${totalAmount.toLocaleString()}</span></div>
+
+                    <p style="margin-top: 20px; font-size: 12px; color: #6b7280;">Please ensure the room is ready for arrival.</p>
+                </div>
+            </body>
+            </html>
+            `,
+            text: `New Booking Received! 🎉\n\nBooking ID: #${bookingId}\nGuest: ${guestName} (${guestPhone}, ${guestEmail})\nRoom: ${roomName}\nDates: ${checkIn} - ${checkOut}\nAmount: ₹${totalAmount.toLocaleString()}\n\nPlease ensure the room is ready.`
+        })
+        console.log("Owner Notification Sent:", data)
+    } catch (error) {
+        console.error("Error sending owner notification:", error)
+    }
 }

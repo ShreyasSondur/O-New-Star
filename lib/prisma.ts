@@ -12,6 +12,7 @@ const pool = new Pool({
 })
 const adapter = new PrismaPg(pool)
 
+console.log("Initializing Prisma Client...")
 export const db = globalForPrisma.prisma || new PrismaClient({ adapter })
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = db

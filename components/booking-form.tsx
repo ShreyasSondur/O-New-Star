@@ -30,13 +30,16 @@ export function BookingForm({ room, searchParams, onComplete, onCancel, onBookin
     guestPhone: "",
     guestAddress: "",
   })
+  const [numExtraBeds, setNumExtraBeds] = useState(0)
   const [loading, setLoading] = useState(false)
   const [bookingId, setBookingId] = useState<number | null>(null)
   const [showPayment, setShowPayment] = useState(false)
   const [bookingConfirmed, setBookingConfirmed] = useState(false)
 
   const nights = calculateNights(searchParams.checkIn, searchParams.checkOut)
-  const totalAmount = Number.parseFloat(room.price_per_night.toString()) * nights
+  const baseAmount = Number.parseFloat(room.price_per_night.toString()) * nights
+  const extraBedCharge = numExtraBeds * 200 * nights
+  const totalAmount = baseAmount + extraBedCharge
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -63,6 +66,7 @@ export function BookingForm({ room, searchParams, onComplete, onCancel, onBookin
           guestEmail: formData.guestEmail,
           guestPhone: formData.guestPhone,
           guestAddress: formData.guestAddress,
+          numExtraBeds: numExtraBeds, // Send to API
         }),
       })
 
@@ -120,6 +124,12 @@ export function BookingForm({ room, searchParams, onComplete, onCancel, onBookin
               <span className="text-muted-foreground">Check-out:</span>
               <span className="font-medium">{new Date(searchParams.checkOut).toLocaleDateString()}</span>
             </div>
+            {numExtraBeds > 0 && (
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Extra Beds:</span>
+                <span className="font-medium">{numExtraBeds}</span>
+              </div>
+            )}
             <div className="flex justify-between text-lg font-bold pt-2 border-t">
               <span>Total Paid:</span>
               <span>₹{totalAmount.toLocaleString()}</span>
@@ -210,12 +220,32 @@ export function BookingForm({ room, searchParams, onComplete, onCancel, onBookin
             </div>
 
             <div className="pt-3 border-t">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="extraBed"
+                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    checked={numExtraBeds > 0}
+                    onChange={(e) => setNumExtraBeds(e.target.checked ? 1 : 0)}
+                  />
+                  <Label htmlFor="extraBed" className="cursor-pointer">
+                    Add Extra Mattress (+₹200/night)
+                  </Label>
+                </div>
+              </div>
+
               <div className="flex justify-between items-center">
                 <div>
                   <p className="text-sm text-muted-foreground">
                     ₹{Number.parseFloat(room.price_per_night.toString()).toLocaleString()} × {nights} night
                     {nights !== 1 ? "s" : ""}
                   </p>
+                  {numExtraBeds > 0 && (
+                    <p className="text-sm text-muted-foreground">
+                      + ₹200 × {nights} (Extra Bed)
+                    </p>
+                  )}
                   <p className="text-2xl font-bold">₹{totalAmount.toLocaleString()}</p>
                 </div>
               </div>

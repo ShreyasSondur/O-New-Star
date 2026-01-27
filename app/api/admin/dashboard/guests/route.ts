@@ -24,15 +24,17 @@ export async function GET(request: Request) {
             endDate.setDate(endDate.getDate() + 1)
         } else if (filter === "week") {
             startDate = new Date(today)
-            // Start of week (Sunday) ? Or just next 7 days? 
-            // "week" in dashboard context usually means "Upcoming Week" or "This Week"
-            // Preserving original logic: from today to +7 days
             endDate = new Date(today)
             endDate.setDate(endDate.getDate() + 7)
         } else if (filter === "month") {
             startDate = new Date(today)
             endDate = new Date(today)
             endDate.setMonth(endDate.getMonth() + 1)
+        } else if (filter === "all") {
+            // For all, we want everything. 
+            // Prisma where clause can be conditioned.
+            startDate = new Date(0) // 1970
+            endDate = new Date(2100, 0, 1) // 2100
         } else {
             // Default fallback
             startDate = new Date(today)

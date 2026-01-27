@@ -90,6 +90,17 @@ model TwoFactorConfirmation {
   @@map("two_factor_confirmations")
 }
 
+model PendingUser {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String
+  token     String
+  expires   DateTime
+  
+  @@map("pending_users")
+}
+
 // --- Existing Tables Mapping ---
 
 model Floor {
@@ -149,6 +160,8 @@ model Booking {
   
   is_admin_booking    Boolean   @default(false)
   blocks_availability Boolean   @default(true)
+  
+  num_extra_beds      Int       @default(0)
   
   razorpay_order_id   String?
   razorpay_payment_id String?
